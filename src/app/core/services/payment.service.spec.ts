@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { PaymentService } from './payment.service';
-import { ProcessPaymentDTO, PaymentResult, Payment } from '../models/payment.model';
+import { ProcessPaymentDTO, PaymentResult } from '../models/payment.model';
 
 describe('PaymentService', () => {
   let service: PaymentService;

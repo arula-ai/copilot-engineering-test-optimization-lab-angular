@@ -2,18 +2,13 @@ import { FormControl } from '@angular/forms';
 import {
   emailValidator,
   passwordStrengthValidator,
-  phoneValidator,
   creditCardValidator,
   cardExpiryValidator,
   cvvValidator,
   postalCodeValidator,
-  matchFieldValidator,
   minAmountValidator,
   maxAmountValidator,
-  dateRangeValidator,
-  ageValidator,
-  noWhitespaceValidator,
-  urlValidator
+  ageValidator
 } from './validators';
 
 describe('Validators', () => {

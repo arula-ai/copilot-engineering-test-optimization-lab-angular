@@ -6,7 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 
 import { UserService } from '@core/services/user.service';
 import { AuthResponse } from '@core/models/user.model';
-import { emailValidator, passwordStrengthValidator } from '@shared/validators/validators';
+import { emailValidator } from '@shared/validators/validators';
 
 @Component({
   selector: 'app-login',

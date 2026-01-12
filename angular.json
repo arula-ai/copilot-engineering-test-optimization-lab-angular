@@ -102,11 +102,23 @@
           "options": {
             "configPath": "jest.config.ts"
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
   "cli": {
-    "analytics": "6d4de168-5545-4087-bc33-6d947c813204"
+    "analytics": "6d4de168-5545-4087-bc33-6d947c813204",
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   }
 }

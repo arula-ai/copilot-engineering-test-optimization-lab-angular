@@ -1,6 +1,6 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, of, delay, map, catchError, tap } from 'rxjs';
+import { Observable, throwError, delay, map, catchError, tap } from 'rxjs';
 import {
   Payment,
   ProcessPaymentDTO,
@@ -36,7 +36,7 @@ export class PaymentService {
     this.completedPayments().reduce((sum, p) => sum + p.amount, 0)
   );
 
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   /**
    * Process a payment with full validation

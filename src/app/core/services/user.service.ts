@@ -1,7 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
-import { map, tap, catchError } from 'rxjs/operators';
+import { tap, catchError } from 'rxjs/operators';
 import {
   User,
   CreateUserDTO,
@@ -31,7 +31,9 @@ export class UserService {
   public readonly isLoading = computed(() => this.loadingSignal());
   public readonly error = computed(() => this.errorSignal());
 
-  constructor(private readonly http: HttpClient) {
+  private readonly http = inject(HttpClient);
+
+  constructor() {
     this.loadStoredAuth();
   }
 

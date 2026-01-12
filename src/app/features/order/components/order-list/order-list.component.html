@@ -9,8 +9,8 @@
 
   <div class="controls">
     <div class="filter-group">
-      <label>Filter by status:</label>
-      <select [value]="filterStatus()" (change)="setFilter($any($event.target).value)">
+      <label for="status-filter">Filter by status:</label>
+      <select id="status-filter" [value]="filterStatus()" (change)="setFilter($any($event.target).value)">
         @for (status of statusOptions; track status) {
           <option [value]="status">{{ status === 'all' ? 'All Orders' : status }}</option>
         }
@@ -50,6 +50,10 @@
           class="order-item"
           [class.selected]="selectedOrderId() === order.id"
           (click)="selectOrder(order.id)"
+          (keyup.enter)="selectOrder(order.id)"
+          (keyup.space)="selectOrder(order.id)"
+          tabindex="0"
+          role="button"
         >
           <div class="order-main">
             <div class="order-info">

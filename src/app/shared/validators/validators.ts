@@ -154,7 +154,7 @@ export function cvvValidator(): ValidatorFn {
 /**
  * Postal code validator
  */
-export function postalCodeValidator(country: string = 'US'): ValidatorFn {
+export function postalCodeValidator(country = 'US'): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     if (!control.value) {
       return null;

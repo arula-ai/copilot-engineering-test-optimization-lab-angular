@@ -1,7 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, timer } from 'rxjs';
-import { map, tap, catchError, switchMap, take } from 'rxjs/operators';
+import { tap, catchError, switchMap, take } from 'rxjs/operators';
 import {
   Order,
   OrderItem,
@@ -40,7 +40,7 @@ export class OrderService {
     this.ordersSignal().filter(o => o.status === 'delivered')
   );
 
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   /**
    * Create a new order
@@ -241,7 +241,7 @@ export class OrderService {
    * Poll for order status updates
    * This method is intentionally flaky for testing purposes
    */
-  pollOrderStatus(orderId: string, intervalMs: number = 5000): Observable<Order> {
+  pollOrderStatus(orderId: string, intervalMs = 5000): Observable<Order> {
     return timer(0, intervalMs).pipe(
       switchMap(() => this.getOrder(orderId)),
       take(10) // Max 10 polls

@@ -1,7 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, OnDestroy, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, Subject, throwError, timer } from 'rxjs';
-import { takeUntil, tap, catchError, retry, delay } from 'rxjs/operators';
+import { takeUntil, tap, catchError, retry } from 'rxjs/operators';
 
 export interface Notification {
   id: string;
@@ -45,7 +45,7 @@ export interface SendNotificationDTO {
 @Injectable({
   providedIn: 'root'
 })
-export class NotificationService {
+export class NotificationService implements OnDestroy {
   private readonly apiUrl = '/api/notifications';
   private readonly destroy$ = new Subject<void>();
 
@@ -71,7 +71,7 @@ export class NotificationService {
     this.notificationsSignal().filter(n => n.priority === 'urgent' && !n.read)
   );
 
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   /**
    * Get all notifications for a user

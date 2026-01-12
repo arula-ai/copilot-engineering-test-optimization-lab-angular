@@ -1,7 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
-import { map, tap, catchError, delay } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { map, tap, catchError } from 'rxjs/operators';
 import {
   Product,
   CreateProductDTO,
@@ -40,7 +40,7 @@ export class InventoryService {
     this.productsSignal().filter(p => p.inventory - p.reservedInventory <= 0)
   );
 
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   /**
    * Get all products
@@ -240,7 +240,7 @@ export class InventoryService {
   /**
    * Check availability for multiple products
    */
-  checkAvailability(items: Array<{ productId: string; quantity: number }>): Observable<Map<string, boolean>> {
+  checkAvailability(items: { productId: string; quantity: number }[]): Observable<Map<string, boolean>> {
     return this.http.post<Record<string, boolean>>(`${this.apiUrl}/check-availability`, { items }).pipe(
       map(result => new Map(Object.entries(result))),
       catchError(error => this.handleError(error))
