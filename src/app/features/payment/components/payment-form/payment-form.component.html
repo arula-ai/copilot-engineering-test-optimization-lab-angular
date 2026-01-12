@@ -1,0 +1,129 @@
+<form [formGroup]="paymentForm" (ngSubmit)="onSubmit()" class="payment-form">
+  <h2>Payment Details</h2>
+
+  @if (errorMessage()) {
+    <div class="error-banner">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <div class="form-group">
+    <label for="amount">Amount</label>
+    <input
+      id="amount"
+      type="number"
+      formControlName="amount"
+      step="0.01"
+      min="0.01"
+    />
+    @if (getFieldError('amount')) {
+      <span class="error">{{ getFieldError('amount') }}</span>
+    }
+  </div>
+
+  <div class="form-group">
+    <label for="currency">Currency</label>
+    <select id="currency" formControlName="currency">
+      @for (currency of currencies; track currency) {
+        <option [value]="currency">{{ currency }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="method">Payment Method</label>
+    <select id="method" formControlName="method">
+      @for (method of paymentMethods; track method.value) {
+        <option [value]="method.value">{{ method.label }}</option>
+      }
+    </select>
+  </div>
+
+  @if (showCardFields()) {
+    <div class="card-details">
+      <div class="form-group">
+        <label for="cardNumber">Card Number</label>
+        <input
+          id="cardNumber"
+          type="text"
+          formControlName="cardNumber"
+          placeholder="1234 5678 9012 3456"
+          maxlength="19"
+        />
+        @if (getFieldError('cardNumber')) {
+          <span class="error">{{ getFieldError('cardNumber') }}</span>
+        }
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="cardExpiry">Expiry</label>
+          <input
+            id="cardExpiry"
+            type="text"
+            formControlName="cardExpiry"
+            placeholder="MM/YY"
+            maxlength="5"
+          />
+          @if (getFieldError('cardExpiry')) {
+            <span class="error">{{ getFieldError('cardExpiry') }}</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="cardCvv">CVV</label>
+          <input
+            id="cardCvv"
+            type="text"
+            formControlName="cardCvv"
+            placeholder="123"
+            maxlength="4"
+          />
+          @if (getFieldError('cardCvv')) {
+            <span class="error">{{ getFieldError('cardCvv') }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="cardHolder">Cardholder Name</label>
+        <input
+          id="cardHolder"
+          type="text"
+          formControlName="cardHolder"
+          placeholder="John Doe"
+        />
+        @if (getFieldError('cardHolder')) {
+          <span class="error">{{ getFieldError('cardHolder') }}</span>
+        }
+      </div>
+    </div>
+  }
+
+  <div class="summary">
+    <div class="summary-row">
+      <span>Subtotal:</span>
+      <span>{{ formatCurrency(paymentForm.get('amount')?.value || 0) }}</span>
+    </div>
+    <div class="summary-row">
+      <span>Processing Fee:</span>
+      <span>{{ formatCurrency(processingFee()) }}</span>
+    </div>
+    <div class="summary-row total">
+      <span>Total:</span>
+      <span>{{ formatCurrency(totalAmount()) }}</span>
+    </div>
+  </div>
+
+  <button
+    type="submit"
+    [disabled]="isSubmitting() || paymentForm.invalid"
+    class="submit-btn"
+  >
+    @if (isSubmitting()) {
+      Processing...
+    } @else {
+      Pay {{ formatCurrency(totalAmount()) }}
+    }
+  </button>
+</form>

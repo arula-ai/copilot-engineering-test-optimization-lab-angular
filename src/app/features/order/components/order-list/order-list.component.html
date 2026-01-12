@@ -1,0 +1,95 @@
+<div class="order-list-container">
+  <header class="order-header">
+    <h2>Your Orders</h2>
+    <div class="order-summary">
+      <span>{{ filteredOrders().length }} orders</span>
+      <span class="total">Total: {{ formatCurrency(totalOrderValue()) }}</span>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="filter-group">
+      <label>Filter by status:</label>
+      <select [value]="filterStatus()" (change)="setFilter($any($event.target).value)">
+        @for (status of statusOptions; track status) {
+          <option [value]="status">{{ status === 'all' ? 'All Orders' : status }}</option>
+        }
+      </select>
+    </div>
+
+    <button class="sort-btn" (click)="toggleSortOrder()">
+      Sort: {{ sortOrder() === 'desc' ? 'Newest First' : 'Oldest First' }}
+    </button>
+
+    <button class="refresh-btn" (click)="loadOrders()" [disabled]="isLoading()">
+      @if (isLoading()) {
+        Refreshing...
+      } @else {
+        Refresh
+      }
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="error-message">
+      {{ error() }}
+      <button (click)="loadOrders()">Retry</button>
+    </div>
+  }
+
+  @if (isLoading() && orders().length === 0) {
+    <div class="loading">Loading orders...</div>
+  } @else if (filteredOrders().length === 0) {
+    <div class="empty-state">
+      <p>No orders found.</p>
+    </div>
+  } @else {
+    <ul class="order-list">
+      @for (order of filteredOrders(); track trackByOrderId($index, order)) {
+        <li
+          class="order-item"
+          [class.selected]="selectedOrderId() === order.id"
+          (click)="selectOrder(order.id)"
+        >
+          <div class="order-main">
+            <div class="order-info">
+              <span class="order-id">Order #{{ order.id.slice(0, 8) }}</span>
+              <span class="order-date">{{ formatDate(order.createdAt) }}</span>
+            </div>
+            <span class="order-status" [class]="getStatusClass(order.status)">
+              {{ order.status }}
+            </span>
+          </div>
+
+          <div class="order-details">
+            <span class="item-count">{{ order.items.length }} item(s)</span>
+            <span class="order-total">{{ formatCurrency(order.total) }}</span>
+          </div>
+
+          @if (order.status === 'draft' || order.status === 'pending') {
+            <div class="order-actions">
+              <button
+                class="cancel-btn"
+                (click)="cancelOrder(order.id); $event.stopPropagation()"
+              >
+                Cancel Order
+              </button>
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  }
+
+  <div class="status-summary">
+    <h4>Orders by Status</h4>
+    <div class="status-counts">
+      @for (status of statusOptions.slice(1); track status) {
+        <div class="status-count">
+          <span class="status-label" [class]="getStatusClass($any(status))">{{ status }}</span>
+          <span class="count">{{ orderCountByStatus()[$any(status)] || 0 }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>
