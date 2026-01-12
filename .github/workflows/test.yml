@@ -47,3 +47,34 @@ jobs:
           name: coverage-report-${{ matrix.node-version }}
           path: coverage/
           retention-days: 7
+
+      - name: Post coverage summary
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'coverage/coverage-summary.json';
+            if (!fs.existsSync(path)) {
+              core.info('coverage summary not found at ' + path);
+              return;
+            }
+            const coverage = JSON.parse(fs.readFileSync(path,'utf8'));
+            const pct = coverage.total?.lines?.pct ?? null;
+            const entries = Object.entries(coverage).filter(([k]) => k !== 'total');
+            const files = entries.map(([k,v]) => {
+              const rel = k.replace(process.cwd() + '/', '');
+              const lines = v.lines || { total: 0, covered: 0, pct: 0 };
+              return { file: rel, pct: lines.pct || 0, uncovered: (lines.total - lines.covered) };
+            });
+            files.sort((a,b) => a.pct - b.pct);
+            const top = files.slice(0,10).map(f => `- ${f.file}: ${f.pct}% lines (${f.uncovered} uncovered)`).join('\n') || 'No files';
+            const body = `**Coverage summary**\n\n- Line coverage: ${pct}%\n\n**Top uncovered files**\n${top}`;
+            const commit_sha = process.env.GITHUB_SHA;
+            const {data: prs} = await github.repos.listPullRequestsAssociatedWithCommit({owner: context.repo.owner, repo: context.repo.repo, commit_sha});
+            if (prs && prs.length > 0) {
+              const pr = prs[0];
+              await github.issues.createComment({owner: context.repo.owner, repo: context.repo.repo, issue_number: pr.number, body});
+            } else {
+              // fallback: create a commit comment so information is visible on the commit
+              await github.repos.createCommitComment({owner: context.repo.owner, repo: context.repo.repo, commit_sha, body});
+            }
